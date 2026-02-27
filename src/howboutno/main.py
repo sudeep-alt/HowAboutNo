@@ -9,7 +9,7 @@ from .model import config_
 import json
 import ipaddress
 
-class HowAboutNo():
+class HowBoutNo():
     @beartype
     def __init__(self, app, config: str | None = None):
         self.app = app

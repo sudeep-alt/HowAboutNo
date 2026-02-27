@@ -1,7 +1,7 @@
-# HowAboutNo
+# HowBoutNo
 *Say no to unwanted traffic*
 
-**HowAboutNo** is an open source ASGI middleware designed to block unwanted traffic on web apps. Supports all ASGI frameworks.
+**HowBoutNo** is an open source ASGI middleware designed to block unwanted traffic on web apps. Supports all ASGI frameworks.
 
 **Version:** `0.1.0`
 
@@ -19,15 +19,16 @@
 
 ## Installation
 ```bash
-pip install howaboutno
+pip install howboutno
 ```
 or whatever method you prefer to install Python packages.
 
 ## Usage
-1. Create a configuration file (e.g., `config.toml`) either manually or by runnning the `howaboutno` command, which generates a sample config file in the current working directory.
-2. Wrap your ASGI app with the `HowAboutNo` middleware, passing the path to your configuration file.
+1. Create a configuration file (e.g., `config.toml`) either manually or by runnning the `howboutno`
+command inside a virtual environment, which generates a sample config file in the current working directory.
+2. Wrap your ASGI app with the `HowBoutNo` middleware, passing the path to your configuration file.
 
-That's it. HowAboutNo will now block unwanted traffic based on the rules defined in your configuration file.
+That's it. HowBoutNo will now block unwanted traffic based on the rules defined in your configuration file.
 
 ### Configuration
 The configuration file is in TOML format and supports the following options:
@@ -126,7 +127,7 @@ disable_logging = false
 ### FastAPI
 ```python
 from fastapi import FastAPI
-from howaboutno import HowAboutNo
+from howboutno import HowBoutNo
 
 app = FastAPI()
 
@@ -137,11 +138,11 @@ def root():
     }
 
 # Must be at the very end after all routes have been defined and after all other middleware have been added if there are any.
-app = HowAboutNo(app, config="config.toml")
+app = HowBoutNo(app, config="config.toml")
 ```
 
 > [!NOTE]
-Wrapping the app with HowAboutNo at the end instead of using `add_middleware` is recommended since Starlette, which FastAPI is built on top of, suppresses exceptions raised in middleware's initialization when using `add_middleware`, and only raised when a request is made, which can make debugging difficult. Wrapping the app with HowAboutNo directly will ensure that HowAboutNo is the outermost layer of the app and any exceptions raised in its initialization will be raised immediately, making them easier to debug.
+Wrapping the app with HowBoutNo at the end instead of using `add_middleware` is recommended since Starlette, which FastAPI is built on top of, suppresses exceptions raised in middleware's initialization when using `add_middleware`, and only raised when a request is made, which can make debugging difficult. Wrapping the app with HowBoutNo directly will ensure that HowBoutNo is the outermost layer of the app and any exceptions raised in its initialization will be raised immediately, making them easier to debug.
 
 ### Starlette
 ```python
@@ -149,7 +150,7 @@ from starlette.applications import Starlette
 from starlette.responses import JSONResponse
 from starlette.requests import Request
 from starlette.routing import Route
-from howaboutno import HowAboutNo
+from howboutno import HowBoutNo
 
 async def root(request: Request):
     return JSONResponse({"message": "Hello, world!"})
@@ -161,15 +162,15 @@ routes = [
 app = Starlette(routes=routes)
 
 # Must be at the very end after all routes have been defined and after all other middleware have been added if there are any.
-app = HowAboutNo(app, config="config.toml")
+app = HowBoutNo(app, config="config.toml")
 ```
 
 > [!NOTE]
-Similarly to FastAPI, wrapping the app with HowAboutNo at the end instead of using Starlette's `Middleware` class is recommended to ensure that any exceptions raised in the initialization of HowAboutNo are raised immediately, making them easier to debug.
+Similarly to FastAPI, wrapping the app with HowBoutNo at the end instead of using Starlette's `Middleware` class is recommended to ensure that any exceptions raised in the initialization of HowBoutNo are raised immediately, making them easier to debug.
 
 ### Pure ASGI
 ```python
-from howaboutno import HowAboutNo
+from howboutno import HowBoutNo
 
 async def app(scope, receive, send):
     if scope["type"] == "http":
@@ -187,11 +188,11 @@ async def app(scope, receive, send):
         })
 
 # Must be at the very end after all routes have been defined and after all other middleware have been added if there are any.
-app = HowAboutNo(app, config="config.toml")
+app = HowBoutNo(app, config="config.toml")
 
 
 ### Other ASGI frameworks
-HowAboutNo can be used with any ASGI framework by wrapping the ASGI app with HowAboutNo and passing the path to the configuration file after all routes and other middleware have been defined.
+HowBoutNo can be used with any ASGI framework by wrapping the ASGI app with HowBoutNo and passing the path to the configuration file after all routes and other middleware have been defined.
 
 ## Architecture
 ### IP retrieval
@@ -218,18 +219,18 @@ A request is blocked if **any** of the following match (checked top → bottom):
 - The `block_country` response is used
 
 ### Data source
-HowAboutNo uses [ip-api.com](http://ip-api.com/) for IP lookups, which provides data on continent, country, ASN, rDNS hostname, hosting and proxy status for a given IP address.
+HowBoutNo uses [ip-api.com](http://ip-api.com/) for IP lookups, which provides data on continent, country, ASN, rDNS hostname, hosting and proxy status for a given IP address.
 > [!NOTE]
-The data returned by ip-api.com may contain errors or be inaccurate. HowAboutNo does not make any guarantees regarding the accuracy of the data returned by ip-api.com and is not responsible for any consequences that may arise from blocking decisions based on this data.
+The data returned by ip-api.com may contain errors or be inaccurate. HowBoutNo does not make any guarantees regarding the accuracy of the data returned by ip-api.com and is not responsible for any consequences that may arise from blocking decisions based on this data.
 The middleware returns a 503 if it fails to lookup the data of the IP address.
 
-HowAboutNo also inherits the limitations of ip-api.com, including potential inaccuracies in the data and rate limits on requests. Enabling caching can help mitigate the impact of rate limits, but it's important to be aware of these limitations when using HowAboutNo.
+HowBoutNo also inherits the limitations of ip-api.com, including potential inaccuracies in the data and rate limits on requests. Enabling caching can help mitigate the impact of rate limits, but it's important to be aware of these limitations when using HowBoutNo.
 
 > [!WARNING]
-HowAboutNo relies on ip-api.com for its blocking functionality, and ip-api.com has its own terms of service which must be followed. Make sure to review ip-api.com's terms of service before using HowAboutNo, especially if you plan to use it for commercial purposes.
+HowBoutNo relies on ip-api.com for its blocking functionality, and ip-api.com has its own terms of service which must be followed. Make sure to review ip-api.com's terms of service before using HowBoutNo, especially if you plan to use it for commercial purposes.
 
 ### Caching
-HowAboutNo uses an LRU cache to store IP lookup results from ip-api.com.
+HowBoutNo uses an LRU cache to store IP lookup results from ip-api.com.
 
 To disable caching, set `size` to `0`.  
 To disable cache invalidation, set `invalidate_success_after` or `invalidate_error_after` to `0` according to your needs.
@@ -251,15 +252,15 @@ To disable cache invalidation, set `invalidate_success_after` or `invalidate_err
 ## FAQ
 ### General
 - **Q: Will this middleware work with any ASGI framework?**
-    - A: Yes, HowAboutNo is built to be compatible with any ASGI framework. You can wrap any ASGI app with HowAboutNo to add the blocking functionality.
+    - A: Yes, HowBoutNo is built to be compatible with any ASGI framework. You can wrap any ASGI app with HowBoutNo to add the blocking functionality.
 - **Q: Why can't I use Cloudflare or a similar service instead of this middleware?**
-    - A: To avoid corporate dependencies and have full control over the blocking logic and responses. HowAboutNo allows you to define custom blocking rules and responses without relying on third-party services, which can be important for privacy, security, and customization reasons.
-- **Q: Is HowAboutNo free to use?**
-    - A: Yes, HowAboutNo is open source and free to use under the MIT License.
+    - A: To avoid corporate dependencies and have full control over the blocking logic and responses. HowBoutNo allows you to define custom blocking rules and responses without relying on third-party services, which can be important for privacy, security, and customization reasons.
+- **Q: Is HowBoutNo free to use?**
+    - A: Yes, HowBoutNo is open source and free to use under the MIT License.
 - **Q: Why ASGI middleware and not WSGI middleware?**
     - A: To be honest, I don't have a specific reason for choosing ASGI over WSGI. I chose ASGI simply because it's the modern standard for Python web applications.
-- **Q: Can I use HowAboutNo with a WSGI app?**
-    - A: Not directly, since HowAboutNo is designed as ASGI middleware. However, you can use an ASGI-to-WSGI adapter like `asgiref.wsgi.WsgiToAsgi` to wrap your WSGI app and then apply HowAboutNo as ASGI middleware to the wrapped app.
+- **Q: Can I use HowBoutNo with a WSGI app?**
+    - A: Not directly, since HowBoutNo is designed as ASGI middleware. However, you can use an ASGI-to-WSGI adapter like `asgiref.wsgi.WsgiToAsgi` to wrap your WSGI app and then apply HowBoutNo as ASGI middleware to the wrapped app.
 - **Q: Can I use this for commercial purposes?**
     - A: Yes, but also no, you can use the source code for commercial purposes. However, the IP lookup functionality relies on [ip-api.com](http://ip-api.com/), which has its own terms of service which does not allow commercial use without a paid plan.
 - **Q: Why such a casual name for a middleware?**
@@ -269,9 +270,9 @@ To disable cache invalidation, set `invalidate_success_after` or `invalidate_err
 
 ### Architecture
 - **Q: Will my app be affected by [ip-api.com](https://ip-api.com/) rate limits?**
-    - A: Yes, but not in the way you might think. Caching is implemented to minimize the number of requests made to ip-api.com, which helps avoid hitting rate limits. However, if you do hit a rate limit, HowAboutNo will return a 503 Service Unavailable response for requests that require an IP lookup until the rate limit resets. This means that your app will not be able to perform IP lookups during this time, but it will still be able to serve requests that do not require IP lookups (e.g., requests from IPs that are already in the cache).
+    - A: Yes, but not in the way you might think. Caching is implemented to minimize the number of requests made to ip-api.com, which helps avoid hitting rate limits. However, if you do hit a rate limit, HowBoutNo will return a 503 Service Unavailable response for requests that require an IP lookup until the rate limit resets. This means that your app will not be able to perform IP lookups during this time, but it will still be able to serve requests that do not require IP lookups (e.g., requests from IPs that are already in the cache).
 - **Q: What happens if ip-api.com is unreachable or returns an error?**
-    - A: If ip-api.com returns an error or is unreachable, HowAboutNo will treat the lookup as unsuccessful and will return a 503 Service Unavailable response.
+    - A: If ip-api.com returns an error or is unreachable, HowBoutNo will treat the lookup as unsuccessful and will return a 503 Service Unavailable response.
 - **Q: If multiple block conditions match for a request, which response is returned?**
     - A: Only the response for the first matching block condition is returned. The block conditions are checked in the following order: IP, continent, country, ASN, rDNS hostname, hosting status, and proxy status. So if a request matches both `block_country` and `block_asn`, the response defined for `block_country` will be returned.
 - **Q: Can I exclude certain IPs or paths from being blocked?**
@@ -293,7 +294,7 @@ To disable cache invalidation, set `invalidate_success_after` or `invalidate_err
         - There could be a network issue preventing your server from reaching ip-api.com, which would also lead to failed lookups and 503 responses. You can check your server's network connectivity to ensure it can reach ip-api.com.
 
 - **Q: My configuration changes are not taking effect. What should I do?**
-    - A: The configuration file is read when the HowAboutNo middleware is initialized. If you make changes to the configuration file after the middleware has been initialized, those changes will not take effect until the middleware is reloaded. To apply configuration changes, you will need to restart your ASGI application so that the HowAboutNo middleware can read the updated configuration file.
+    - A: The configuration file is read when the HowBoutNo middleware is initialized. If you make changes to the configuration file after the middleware has been initialized, those changes will not take effect until the middleware is reloaded. To apply configuration changes, you will need to restart your ASGI application so that the HowBoutNo middleware can read the updated configuration file.
 
 Anything else? Please let me know by opening an issue!
 
