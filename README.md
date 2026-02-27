@@ -189,7 +189,7 @@ async def app(scope, receive, send):
 
 # Must be at the very end after all routes have been defined and after all other middleware have been added if there are any.
 app = HowBoutNo(app, config="config.toml")
-
+```
 
 ### Other ASGI frameworks
 HowBoutNo can be used with any ASGI framework by wrapping the ASGI app with HowBoutNo and passing the path to the configuration file after all routes and other middleware have been defined.
