@@ -3,7 +3,7 @@
 
 **HowBoutNo** is an open source ASGI middleware designed to block unwanted traffic on web apps. Supports all ASGI frameworks.
 
-**Version:** `0.1.0`
+**Version:** `0.1.3`
 
 ## Features
 - Block traffic based on IP, continent, country, ASN, RDNS hostname, hosting and proxy status.
