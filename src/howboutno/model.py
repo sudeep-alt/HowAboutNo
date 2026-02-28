@@ -95,12 +95,13 @@ class response_model_(BaseModel):
             return response_obj
 
 class block_ip_(BaseModel):
-    block_ip: list[IPvAnyAddress] = []
+    block_ip: list = []
 
     @field_validator("block_ip", mode="before")
     @classmethod
     def validate_ip_addresses(cls, value):
         return [str(ipaddress.ip_address(ip.strip())) for ip in value]
+    
 
 class block_continent_(BaseModel):
     block_continent: list[str] = []
